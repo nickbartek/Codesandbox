@@ -81,7 +81,8 @@
         }
 
         for (let i = 0; i < 20; i++) {
-            createBall();
+            
+            setTimeout(createBall, 1000 * i);
         }
 
         updateBalls();
