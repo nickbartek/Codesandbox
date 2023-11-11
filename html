@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruch kulek</title>
+    <style>
+        .ball {
+            width: 40px;
+            height: 40px;
+            background-color: black;
+            border-radius: 50%;
+            position: absolute;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        const balls = [];
+
+        function createBall() {
+            const ball = document.createElement('div');
+            ball.classList.add('ball');
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * window.innerHeight;
+            const speedX = (Math.random() - 0.5) * 5; // Losowa prędkość w osi X
+            const speedY = (Math.random() - 0.5) * 5; // Losowa prędkość w osi Y
+
+            ball.style.left = x + 'px';
+            ball.style.top = y + 'px';
+            ball.speedX = speedX;
+            ball.speedY = speedY;
+
+            ball.addEventListener('click', function() {
+                this.style.display = 'none';
+            });
+
+            document.body.appendChild(ball);
+            balls.push(ball);
+        }
+
+        function checkBallCollision(ball1, ball2) {
+            const rect1 = ball1.getBoundingClientRect();
+            const rect2 = ball2.getBoundingClientRect();
+
+            return (
+                rect1.left < rect2.left + rect2.width &&
+                rect1.left + rect1.width > rect2.left &&
+                rect1.top < rect2.top + rect2.height &&
+                rect1.top + rect1.height > rect2.top
+            );
+        }
+
+        function updateBalls() {
+            balls.forEach(ball => {
+                let x = parseFloat(ball.style.left) + ball.speedX;
+                let y = parseFloat(ball.style.top) + ball.speedY;
+
+                if (x < 0 || x > window.innerWidth - ball.clientWidth) {
+                    ball.speedX *= -1; // Odbicie od krawędzi
+                }
+
+                if (y < 0 || y > window.innerHeight - ball.clientHeight) {
+                    ball.speedY *= -1; // Odbicie od krawędzi
+                }
+
+                ball.style.left = x + 'px';
+                ball.style.top = y + 'px';
+
+                balls.forEach(otherBall => {
+                    if (otherBall !== ball && checkBallCollision(ball, otherBall)) {
+                        // Odbicie od innej kuli
+                        ball.speedX *= -1;
+                        ball.speedY *= -1;
+                    }
+                });
+            });
+
+            requestAnimationFrame(updateBalls);
+        }
+
+        for (let i = 0; i < 20; i++) {
+            createBall();
+        }
+
+        updateBalls();
+    </script>
+</body>
+</html>
